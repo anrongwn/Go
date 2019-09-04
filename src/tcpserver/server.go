@@ -41,6 +41,7 @@ func startServer(port int, logout *log.Logger) int {
 func doWork(conn net.Conn, logout *log.Logger) {
 	fmt.Println("new connection:", conn.LocalAddr())
 	logout.Println("new connection:", conn.LocalAddr())
+
 	for {
 		/*
 			buf := make([]byte, 1024)
@@ -57,7 +58,8 @@ func doWork(conn net.Conn, logout *log.Logger) {
 		*/
 
 		scanner := bufio.NewScanner(conn) // reader为实现了io.Reader接口的对象，如net.Conn
-		scanner.Split(func(data []byte, atEOF bool) (advance int, token []byte, err error) {
+		scanner.Split(func(data []byte, atEOF bool) (advance int,
+			token []byte, err error) {
 			if !atEOF && data[0] == 'V' { // 由于我们定义的数据包头最开始为两个字节的版本号，所以只有以V开头的数据包才处理
 				if len(data) > 4 { // 如果收到的数据>4个字节(2字节版本号+2字节数据包长度)
 					length := int16(0)

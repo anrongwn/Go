@@ -69,6 +69,7 @@ func main() {
 		if inputContent == "Q" {
 			return
 		}
+
 		pack := &datapackage.Package{
 			Version:        [2]byte{'V', '1'},
 			Timestamp:      time.Now().Unix(),
