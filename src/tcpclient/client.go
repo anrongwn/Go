@@ -10,6 +10,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/axgle/mahonia"
 )
 
 func main() {
@@ -61,11 +63,12 @@ func main() {
 	//send info to server until Quit
 	for {
 		fmt.Println("What do you send to the server? Type Q to quit.")
+		enc := mahonia.NewEncoder("UTF-8")
+
 		content, _ := inputReader.ReadString('\n')
 		inputContent := strings.Trim(content, "\n")
 
-		logout.Println(inputContent)
-
+		enc.ConvertString(content)
 		if inputContent == "Q" {
 			return
 		}
