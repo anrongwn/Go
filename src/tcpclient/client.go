@@ -8,16 +8,35 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/signal"
 	"strings"
 	"time"
 
 	"github.com/axgle/mahonia"
 )
 
+func waitSignal(ch chan bool) {
+	log.Println("begin wait signal....")
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, os.Kill)
+
+	s := <-c
+
+	log.Println("Got signal:", s)
+	//log.Fatalln("Got signal:", s)
+	ch <- true
+	os.Exit(1)
+}
+
 func main() {
 	log.Println("start tcp client.")
 
 	logfile, err := os.OpenFile("client.log", os.O_CREATE|os.O_RDWR|os.O_APPEND, os.ModeAppend)
+
+	//
+	stopch := make(chan bool)
+	go waitSignal(stopch)
 
 	if err != nil {
 		fmt.Println("create log file fail :", err.Error())
@@ -70,6 +89,7 @@ func main() {
 
 		enc.ConvertString(content)
 		if inputContent == "Q" {
+			fmt.Println("input Q to quit!")
 			return
 		}
 

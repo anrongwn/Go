@@ -9,7 +9,11 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/signal"
+	"sync"
 )
+
+var g_wg sync.WaitGroup //全局
 
 func startServer(port int, logout *log.Logger) int {
 	var r int = 0
@@ -24,6 +28,9 @@ func startServer(port int, logout *log.Logger) int {
 	}
 	defer listener.Close()
 
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, os.Kill)
+
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -32,7 +39,9 @@ func startServer(port int, logout *log.Logger) int {
 			return -2
 		}
 
+		//g_wg.Add(1)
 		go doWork(conn, logout)
+
 	}
 
 	return r
@@ -41,7 +50,7 @@ func startServer(port int, logout *log.Logger) int {
 func doWork(conn net.Conn, logout *log.Logger) {
 	fmt.Println("new connection:", conn.LocalAddr())
 	logout.Println("new connection:", conn.LocalAddr())
-
+	//defer g_wg.Done()
 	for {
 		/*
 			buf := make([]byte, 1024)
@@ -84,6 +93,7 @@ func doWork(conn net.Conn, logout *log.Logger) {
 }
 
 func main() {
+
 	port := 9090
 	fmt.Println("====start port: ", port, "=====")
 	logfile, err := os.OpenFile("server.log", os.O_CREATE|os.O_RDWR|os.O_APPEND, os.ModeAppend)
@@ -98,4 +108,6 @@ func main() {
 	logout.Println("====start port: ", port, "=====")
 
 	startServer(port, logout)
+
+	//g_wg.Wait()
 }
