@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"runtime"
 	"strings"
 	"time"
 
@@ -70,7 +71,13 @@ func main() {
 	//inputReader = bufio.NewReader(os.Stdin)
 	fmt.Println("Please input your name:")
 	srcCoder := mahonia.NewDecoder("utf-8")
-	strFS := srcCoder.ConvertString("\r\n") //注意windows 下用\r\n 换行，linux下用\n
+	var strFS string
+	if runtime.GOOS == `windows` {
+		strFS = srcCoder.ConvertString("\r\n") //注意windows 下用\r\n 换行，linux下用\n
+	} else {
+		strFS = srcCoder.ConvertString("\n") //注意windows 下用\r\n 换行，linux下用\n
+	}
+
 	clientName, _ := inputReader.ReadString('\n')
 	inputClientName := strings.Trim(clientName, strFS)
 
