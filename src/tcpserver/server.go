@@ -34,7 +34,9 @@ func startServer(port int, logout *log.Logger) int {
 		select {
 		case s := <-c:
 			log.Println("Got signal:", s)
-			os.Exit(0)
+
+			listener.Close()
+			//os.Exit(0)
 		}
 	}()
 
@@ -43,6 +45,8 @@ func startServer(port int, logout *log.Logger) int {
 		if err != nil {
 			fmt.Println("Error accepting:", err.Error())
 			logout.Println("Error accepting: ", err.Error())
+
+			//
 			return -2
 		}
 
@@ -55,9 +59,10 @@ func startServer(port int, logout *log.Logger) int {
 }
 
 func doWork(conn net.Conn, logout *log.Logger) {
-	fmt.Println("a new connection from:", conn.RemoteAddr())
+	log.Println("a new connection from:", conn.RemoteAddr())
 	logout.Println("a new connection from:", conn.RemoteAddr())
 	//defer g_wg.Done()
+
 	for {
 		/*
 			buf := make([]byte, 1024)
@@ -96,6 +101,7 @@ func doWork(conn net.Conn, logout *log.Logger) {
 			logout.Println("Receive data from client:", scannedPack.String())
 		}
 	}
+	conn.Close()
 }
 
 func main() {
