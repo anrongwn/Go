@@ -27,7 +27,7 @@ func waitSignal(ch chan bool) {
 	log.Println("Got signal:", s)
 	//log.Fatalln("Got signal:", s)
 	//ch <- true
-	os.Exit(1)
+	os.Exit(0)
 }
 
 func main() {
@@ -67,6 +67,7 @@ func main() {
 		fmt.Println("dial error : ", err.Error())
 		return
 	}
+	defer conn.Close()
 
 	//inputReader = bufio.NewReader(os.Stdin)
 	fmt.Println("Please input your name:")

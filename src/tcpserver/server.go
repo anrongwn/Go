@@ -9,6 +9,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/signal"
 )
 
 //var g_wg sync.WaitGroup //全局
@@ -26,10 +27,16 @@ func startServer(port int, logout *log.Logger) int {
 	}
 	defer listener.Close()
 
-	/*
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, os.Interrupt, os.Kill)
-	*/
+	//
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, os.Kill)
+	go func() {
+		select {
+		case s := <-c:
+			log.Println("Got signal:", s)
+			os.Exit(0)
+		}
+	}()
 
 	for {
 		conn, err := listener.Accept()
@@ -48,8 +55,8 @@ func startServer(port int, logout *log.Logger) int {
 }
 
 func doWork(conn net.Conn, logout *log.Logger) {
-	fmt.Println("new connection:", conn.LocalAddr())
-	logout.Println("new connection:", conn.LocalAddr())
+	fmt.Println("a new connection from:", conn.RemoteAddr())
+	logout.Println("a new connection from:", conn.RemoteAddr())
 	//defer g_wg.Done()
 	for {
 		/*
