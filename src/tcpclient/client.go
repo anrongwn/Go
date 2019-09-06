@@ -25,7 +25,7 @@ func waitSignal(ch chan bool) {
 
 	log.Println("Got signal:", s)
 	//log.Fatalln("Got signal:", s)
-	ch <- true
+	//ch <- true
 	os.Exit(1)
 }
 
@@ -69,8 +69,10 @@ func main() {
 
 	//inputReader = bufio.NewReader(os.Stdin)
 	fmt.Println("Please input your name:")
+	srcCoder := mahonia.NewDecoder("utf-8")
+	strFS := srcCoder.ConvertString("\r\n") //注意windows 下用\r\n 换行，linux下用\n
 	clientName, _ := inputReader.ReadString('\n')
-	inputClientName := strings.Trim(clientName, "\n")
+	inputClientName := strings.Trim(clientName, strFS)
 
 	/*
 		hostname, err := os.Hostname()
@@ -82,13 +84,11 @@ func main() {
 	//send info to server until Quit
 	for {
 		fmt.Println("What do you send to the server? Type Q to quit.")
-		enc := mahonia.NewEncoder("UTF-8")
 
 		content, _ := inputReader.ReadString('\n')
-		inputContent := strings.Trim(content, "\n")
+		inputContent := strings.Trim(content, strFS)
 
-		enc.ConvertString(content)
-		if inputContent == "Q" {
+		if inputContent == srcCoder.ConvertString("Q") {
 			fmt.Println("input Q to quit!")
 			return
 		}

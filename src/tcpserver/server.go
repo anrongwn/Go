@@ -9,11 +9,9 @@ import (
 	"log"
 	"net"
 	"os"
-	"os/signal"
-	"sync"
 )
 
-var g_wg sync.WaitGroup //全局
+//var g_wg sync.WaitGroup //全局
 
 func startServer(port int, logout *log.Logger) int {
 	var r int = 0
@@ -28,8 +26,10 @@ func startServer(port int, logout *log.Logger) int {
 	}
 	defer listener.Close()
 
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill)
+	/*
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, os.Interrupt, os.Kill)
+	*/
 
 	for {
 		conn, err := listener.Accept()
