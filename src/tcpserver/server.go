@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"datapackage"
 	"encoding/binary"
+	"errors"
+	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -16,10 +18,13 @@ import (
 
 func startServer(port int, logout *log.Logger) int {
 	var r int = 0
-	addr := "127.0.0.1:"
-	addr += fmt.Sprintf("%d", port)
+	/*
+		addr := "127.0.0.1:"
+		addr += fmt.Sprintf("%d", port)
 
-	listener, err := net.Listen("tcp", addr)
+		listener, err := net.Listen("tcp", addr)
+	*/
+	listener, err := net.Listen("tcp", g_hostname)
 	if err != nil {
 		fmt.Println("Error lister : ", err.Error())
 		logout.Println("Error lister : ", err.Error())
@@ -89,8 +94,12 @@ func doWork(conn net.Conn, logout *log.Logger) {
 						return int(length) + 4, data[:int(length)+4], nil
 					}
 				}
+			} else if atEOF {
+				log.Println("Receive data from client EOF!")
+
+				return 0, nil, errors.New("client EOF")
 			}
-			return
+			return 0, nil, nil
 		})
 		// 打印接收到的数据包
 		for scanner.Scan() {
@@ -98,17 +107,35 @@ func doWork(conn net.Conn, logout *log.Logger) {
 			scannedPack.Unpack(bytes.NewReader(scanner.Bytes()))
 			//log.Println(scannedPack)
 
-			fmt.Println("Receive data from client:", scannedPack.String())
+			log.Println("Receive data from client:", scannedPack.String())
 			logout.Println("Receive data from client:", scannedPack.String())
+
+			/*
+				e := scanner.Err()
+				if e != nil {
+					log.Println("scan err:", e.Error())
+					break
+				}
+			*/
 		}
 	}
 
+	log.Println("doWork end.")
+	logout.Println("doWork end.")
+}
+
+var g_hostname string
+
+func init() {
+	flag.StringVar(&g_hostname, "hostname", "127.0.0.1:9090", "ip:port")
 }
 
 func main() {
 
+	flag.Parse()
+
 	port := 9090
-	fmt.Println("====start port: ", port, "=====")
+	fmt.Println("====start port: ", g_hostname, "=====")
 	logfile, err := os.OpenFile("server.log", os.O_CREATE|os.O_RDWR|os.O_APPEND, os.ModeAppend)
 
 	if err != nil {

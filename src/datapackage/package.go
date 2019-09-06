@@ -2,8 +2,14 @@ package datapackage
 
 import (
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"io"
+)
+
+var (
+	ERR_EOF  = errors.New("EOF")
+	ERR_EXIT = errors.New("EXIT")
 )
 
 type Package struct {
@@ -15,6 +21,10 @@ type Package struct {
 	TagLength      int16   // 标签长度
 	Tag            []byte  // 标签
 	Msg            []byte  // 日志数据
+}
+
+func init() {
+	//fmt.Println("package datapackage init()")
 }
 
 func (p *Package) Pack(writer io.Writer) error {

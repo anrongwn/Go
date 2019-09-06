@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"datapackage"
+	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -30,8 +31,15 @@ func waitSignal(ch chan bool) {
 	os.Exit(0)
 }
 
+var g_hostname string
+
+func init() {
+	flag.StringVar(&g_hostname, "hostname", "127.0.0.1:9090", "ip:port")
+}
+
 func main() {
-	log.Println("start tcp client.")
+	flag.Parse()
+	log.Println("start tcp client,connect hostname:", g_hostname)
 
 	logfile, err := os.OpenFile("client.log", os.O_CREATE|os.O_RDWR|os.O_APPEND, os.ModeAppend)
 
@@ -61,13 +69,17 @@ func main() {
 		addr += fmt.Sprintf("%s", port)
 		fmt.Println(addr)
 	*/
-	addr := "127.0.0.1:9090"
-	conn, err := net.Dial("tcp", addr)
+	//addr := "127.0.0.1:9090"
+	conn, err := net.Dial("tcp", g_hostname)
 	if err != nil {
 		fmt.Println("dial error : ", err.Error())
 		return
 	}
-	defer conn.Close()
+	//
+	defer func() {
+		conn.Close()
+		log.Println("conn.Close()")
+	}()
 
 	//inputReader = bufio.NewReader(os.Stdin)
 	fmt.Println("Please input your name:")
