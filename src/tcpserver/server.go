@@ -61,6 +61,7 @@ func startServer(port int, logout *log.Logger) int {
 func doWork(conn net.Conn, logout *log.Logger) {
 	log.Println("a new connection from:", conn.RemoteAddr())
 	logout.Println("a new connection from:", conn.RemoteAddr())
+	defer conn.Close()
 	//defer g_wg.Done()
 
 	for {
@@ -101,7 +102,7 @@ func doWork(conn net.Conn, logout *log.Logger) {
 			logout.Println("Receive data from client:", scannedPack.String())
 		}
 	}
-	conn.Close()
+
 }
 
 func main() {
