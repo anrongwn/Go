@@ -31,15 +31,15 @@ func waitSignal(ch chan bool) {
 	os.Exit(0)
 }
 
-var g_hostname string
+var gHostName string
 
 func init() {
-	flag.StringVar(&g_hostname, "hostname", "127.0.0.1:9090", "ip:port")
+	flag.StringVar(&gHostName, "hostname", "127.0.0.1:9090", "ip:port")
 }
 
 func main() {
 	flag.Parse()
-	log.Println("start tcp client,connect hostname:", g_hostname)
+	log.Println("start tcp client,connect hostname:", gHostName)
 
 	logfile, err := os.OpenFile("client.log", os.O_CREATE|os.O_RDWR|os.O_APPEND, os.ModeAppend)
 
@@ -70,7 +70,7 @@ func main() {
 		fmt.Println(addr)
 	*/
 	//addr := "127.0.0.1:9090"
-	conn, err := net.Dial("tcp", g_hostname)
+	conn, err := net.Dial("tcp", gHostName)
 	if err != nil {
 		fmt.Println("dial error : ", err.Error())
 		return

@@ -17,14 +17,14 @@ import (
 //var g_wg sync.WaitGroup //全局
 
 func startServer(port int, logout *log.Logger) int {
-	var r int = 0
+	//var r int = 0
 	/*
 		addr := "127.0.0.1:"
 		addr += fmt.Sprintf("%d", port)
 
 		listener, err := net.Listen("tcp", addr)
 	*/
-	listener, err := net.Listen("tcp", g_hostname)
+	listener, err := net.Listen("tcp", gHostName)
 	if err != nil {
 		fmt.Println("Error lister : ", err.Error())
 		logout.Println("Error lister : ", err.Error())
@@ -60,7 +60,7 @@ func startServer(port int, logout *log.Logger) int {
 
 	}
 
-	return r
+	return 0
 }
 
 func doWork(conn net.Conn, logout *log.Logger) {
@@ -95,7 +95,7 @@ func doWork(conn net.Conn, logout *log.Logger) {
 					}
 				}
 			} else if atEOF {
-				log.Println("Receive data from client EOF!")
+				//log.Println("Receive data from client EOF!")
 
 				return 0, nil, errors.New("client EOF")
 			}
@@ -124,10 +124,10 @@ func doWork(conn net.Conn, logout *log.Logger) {
 	logout.Println("doWork end.")
 }
 
-var g_hostname string
+var gHostName string
 
 func init() {
-	flag.StringVar(&g_hostname, "hostname", "127.0.0.1:9090", "ip:port")
+	flag.StringVar(&gHostName, "hostname", "127.0.0.1:9090", "ip:port")
 }
 
 func main() {
@@ -135,7 +135,7 @@ func main() {
 	flag.Parse()
 
 	port := 9090
-	fmt.Println("====start port: ", g_hostname, "=====")
+	fmt.Println("====start port: ", gHostName, "=====")
 	logfile, err := os.OpenFile("server.log", os.O_CREATE|os.O_RDWR|os.O_APPEND, os.ModeAppend)
 
 	if err != nil {
