@@ -2,16 +2,18 @@ package datapackage
 
 import (
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"io"
 )
 
+/*
 var (
-	ERR_EOF  = errors.New("EOF")
-	ERR_EXIT = errors.New("EXIT")
+	ERR_EOF  = errors.New("EOF")  //eof错识
+	ERR_EXIT = errors.New("EXIT") //退出
 )
+*/
 
+//Package 数据包格式
 type Package struct {
 	Version        [2]byte // 协议版本，暂定V1
 	Length         int16   // 数据部分长度
@@ -27,6 +29,7 @@ func init() {
 	//fmt.Println("package datapackage init()")
 }
 
+//Pack :数据打包功能
 func (p *Package) Pack(writer io.Writer) error {
 	var err error
 	err = binary.Write(writer, binary.BigEndian, &p.Version)
@@ -40,6 +43,7 @@ func (p *Package) Pack(writer io.Writer) error {
 	return err
 }
 
+//Unpack : 解数据包功能
 func (p *Package) Unpack(reader io.Reader) error {
 	var err error
 	err = binary.Read(reader, binary.BigEndian, &p.Version)
@@ -56,6 +60,7 @@ func (p *Package) Unpack(reader io.Reader) error {
 	return err
 }
 
+//String :格式化输出
 func (p *Package) String() string {
 	return fmt.Sprintf("version:%s, length:%d, timestamp:%d, hostname:%s, tag:%s, msg:[%s]",
 		p.Version,
