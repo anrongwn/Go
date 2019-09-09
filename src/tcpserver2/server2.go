@@ -1,0 +1,144 @@
+package main
+
+import (
+	"flag"
+	"fmt"
+	"io"
+	"log"
+	"net"
+	"os"
+	"os/signal"
+	"sync"
+	"time"
+)
+
+var (
+	gHostName   string
+	signChannel = make(chan os.Signal, 1)
+	exitChannel = make(chan int)
+	wg          sync.WaitGroup
+	logout      *log.Logger
+)
+
+func init() {
+	flag.StringVar(&gHostName, "hostname", "127.0.0.1:9090", "ip:port")
+}
+
+func main() {
+	go installSignalHandler()
+	flag.Parse()
+
+	log.Println("==== start ", gHostName, " service ====")
+	logfile, err := os.OpenFile("server2.log", os.O_CREATE|os.O_RDWR|os.O_APPEND, os.ModeAppend)
+	if err != nil {
+		log.Println("create log file fail :", err.Error())
+		return
+	}
+	logout = log.New(logfile, "[info] ", log.LstdFlags|log.Lshortfile)
+	defer func() {
+		logfile.Close()
+	}()
+	logout.Println("==== start ", gHostName, " service ====")
+
+	//
+	tcpAddr, err := net.ResolveTCPAddr("tcp4", gHostName)
+	if err != nil {
+		tmp := "ip addr error,"
+		tmp += err.Error()
+		logout.Println(tmp)
+		log.Fatalln(tmp)
+	}
+
+	log.Println("=== Listening ", gHostName, "....")
+	logout.Println("=== Listening ", gHostName, "....")
+	listener, err := net.ListenTCP("tcp4", tcpAddr)
+	if err != nil {
+		tmp := "net.listen error,"
+		tmp += err.Error()
+		logout.Println(tmp)
+		log.Fatalln(tmp)
+	}
+	defer func() {
+		listener.Close()
+	}()
+
+	wg.Add(1)
+	go accept(listener)
+
+	for {
+		select {
+		case s := <-signChannel:
+			log.Println("Get system signal:", s)
+			logout.Println("Get system signal:", s)
+			go notifyGoroutingExit()
+			goto EXIT
+		}
+	}
+
+EXIT:
+	fmt.Println("Waiting gorouting exit ....")
+	wg.Wait()
+}
+
+func installSignalHandler() {
+	signal.Notify(signChannel, os.Interrupt, os.Kill)
+}
+
+func accept(listener *net.TCPListener) {
+	defer wg.Done()
+
+	for {
+		connection, err := listener.AcceptTCP()
+		if err != nil {
+			tmp := "accept error : "
+			tmp += err.Error()
+			log.Println(tmp)
+			logout.Println(tmp)
+			break
+		} else {
+			wg.Add(1)
+			go connHandler(connection)
+		}
+	}
+}
+
+func connHandler(conn *net.TCPConn) {
+	defer func() {
+		conn.Close()
+		wg.Done()
+	}()
+
+	tmp := "new connection sesion :"
+	tmp += conn.RemoteAddr().String()
+
+	log.Println(tmp)
+	logout.Println(tmp)
+	for {
+		conn.SetReadDeadline(time.Now().Add(10 * time.Microsecond))
+		buf := make([]byte, 1024)
+		len, err := conn.Read(buf)
+		if err != nil {
+			ec := err.Error()
+			if err == io.EOF {
+				tmp = conn.RemoteAddr().String()
+				tmp += " error:"
+				tmp += ec
+				log.Println(tmp)
+				logout.Println(tmp)
+				break
+			} else if neterr, ok := err.(net.Error); ok && neterr.Timeout() {
+				continue
+			}
+
+		} else if len > 0 {
+			data := string(buf)
+			log.Println("recive ", conn.RemoteAddr().String(), " data: ", data)
+			logout.Println(tmp)
+		}
+	}
+
+}
+
+func notifyGoroutingExit() {
+	exitChannel <- 1
+}

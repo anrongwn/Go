@@ -96,6 +96,7 @@ func doWork(conn net.Conn, logout *log.Logger) {
 				}
 			} else if atEOF {
 				//log.Println("Receive data from client EOF!")
+				//panic("client EOF")
 
 				return 0, nil, errors.New("client EOF")
 			}
@@ -114,6 +115,13 @@ func doWork(conn net.Conn, logout *log.Logger) {
 				e := scanner.Err()
 				if e != nil {
 					log.Println("scan err:", e.Error())
+					break
+				}
+			*/
+
+			/*
+				if err := recover(); err != nil {
+					log.Println(err) // 这里的err其实就是panic传入的内容，55
 					break
 				}
 			*/

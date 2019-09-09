@@ -3,3 +3,5 @@ src/tcpserver/server.log
 src/tcpclient/client.log
 
 src/tcpclient/tcpclient.exe
+src/tcpserver2/__debug_bin
+src/tcpserver2/server2.log
