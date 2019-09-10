@@ -122,13 +122,17 @@ func connHandler(ctx context.Context, conn *net.TCPConn) {
 
 	log.Println(tmp)
 	logout.Println(tmp)
+
 	for {
 		select {
 		case <-(ctx).Done():
 			log.Println("connHandler ctx.Done exit")
 			return
 		default:
+			//设置读取timeout
 			conn.SetReadDeadline(time.Now().Add(10 * time.Microsecond))
+
+			//
 			buf := make([]byte, 1024)
 			len, err := conn.Read(buf)
 			if err != nil {
@@ -143,6 +147,7 @@ func connHandler(ctx context.Context, conn *net.TCPConn) {
 					//neterr, ok := err.(net.Error) 用来判断err interface 变量是否为net.Error 类型，如果是
 					//neterr 为net.Error 的值，ok=true
 				} else if neterr, ok := err.(net.Error); ok && neterr.Timeout() {
+					//log.Println("read timeout")
 					continue
 				}
 
