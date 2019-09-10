@@ -1,8 +1,8 @@
 package main
 
 import (
+	"context"
 	"flag"
-	"fmt"
 	"io"
 	"log"
 	"net"
@@ -15,9 +15,9 @@ import (
 var (
 	gHostName   string
 	signChannel = make(chan os.Signal, 1)
-	exitChannel = make(chan int)
-	wg          sync.WaitGroup
-	logout      *log.Logger
+	//exitChannel = make(chan int)
+	wg     sync.WaitGroup
+	logout *log.Logger
 )
 
 func init() {
@@ -65,19 +65,23 @@ func main() {
 	wg.Add(1)
 	go accept(listener)
 
+	///
 	for {
 		select {
 		case s := <-signChannel:
 			log.Println("Get system signal:", s)
 			logout.Println("Get system signal:", s)
-			go notifyGoroutingExit()
+
+			listener.Close()
+
 			goto EXIT
 		}
 	}
 
 EXIT:
-	fmt.Println("Waiting gorouting exit ....")
+	log.Println("Waiting gorouting exit ....")
 	wg.Wait()
+
 }
 
 func installSignalHandler() {
@@ -86,23 +90,28 @@ func installSignalHandler() {
 
 func accept(listener *net.TCPListener) {
 	defer wg.Done()
+	ctx, cancle_server := context.WithCancel(context.Background())
 
 	for {
+
 		connection, err := listener.AcceptTCP()
 		if err != nil {
 			tmp := "accept error : "
 			tmp += err.Error()
 			log.Println(tmp)
 			logout.Println(tmp)
-			break
+
+			cancle_server()
+			return
 		} else {
 			wg.Add(1)
-			go connHandler(connection)
+			go connHandler(ctx, connection)
 		}
+
 	}
 }
 
-func connHandler(conn *net.TCPConn) {
+func connHandler(ctx context.Context, conn *net.TCPConn) {
 	defer func() {
 		conn.Close()
 		wg.Done()
@@ -114,31 +123,36 @@ func connHandler(conn *net.TCPConn) {
 	log.Println(tmp)
 	logout.Println(tmp)
 	for {
-		conn.SetReadDeadline(time.Now().Add(10 * time.Microsecond))
-		buf := make([]byte, 1024)
-		len, err := conn.Read(buf)
-		if err != nil {
-			ec := err.Error()
-			if err == io.EOF {
-				tmp = conn.RemoteAddr().String()
-				tmp += " error:"
-				tmp += ec
-				log.Println(tmp)
-				logout.Println(tmp)
-				break
-			} else if neterr, ok := err.(net.Error); ok && neterr.Timeout() {
-				continue
-			}
+		select {
+		case <-(ctx).Done():
+			log.Println("connHandler ctx.Done exit")
+			return
+		default:
+			conn.SetReadDeadline(time.Now().Add(10 * time.Microsecond))
+			buf := make([]byte, 1024)
+			len, err := conn.Read(buf)
+			if err != nil {
+				ec := err.Error()
+				if err == io.EOF {
+					tmp = conn.RemoteAddr().String()
+					tmp += " error:"
+					tmp += ec
+					log.Println(tmp)
+					logout.Println(tmp)
+					break
+					//neterr, ok := err.(net.Error) 用来判断err interface 变量是否为net.Error 类型，如果是
+					//neterr 为net.Error 的值，ok=true
+				} else if neterr, ok := err.(net.Error); ok && neterr.Timeout() {
+					continue
+				}
 
-		} else if len > 0 {
-			data := string(buf)
-			log.Println("recive ", conn.RemoteAddr().String(), " data: ", data)
-			logout.Println(tmp)
+			} else if len > 0 {
+				data := string(buf)
+				log.Println("recive ", conn.RemoteAddr().String(), " data: ", data)
+				logout.Println(tmp)
+			}
 		}
+
 	}
 
-}
-
-func notifyGoroutingExit() {
-	exitChannel <- 1
 }
