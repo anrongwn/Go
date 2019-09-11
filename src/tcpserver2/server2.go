@@ -90,7 +90,7 @@ func installSignalHandler() {
 
 func accept(listener *net.TCPListener) {
 	defer wg.Done()
-	ctx, cancle_server := context.WithCancel(context.Background())
+	ctx, cancleServer := context.WithCancel(context.Background())
 
 	for {
 
@@ -101,7 +101,7 @@ func accept(listener *net.TCPListener) {
 			log.Println(tmp)
 			logout.Println(tmp)
 
-			cancle_server()
+			cancleServer()
 			return
 		} else {
 			wg.Add(1)
