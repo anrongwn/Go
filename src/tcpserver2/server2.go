@@ -58,6 +58,7 @@ func main() {
 		logout.Println(tmp)
 		log.Fatalln(tmp)
 	}
+
 	defer func() {
 		listener.Close()
 	}()
@@ -93,7 +94,6 @@ func accept(listener *net.TCPListener) {
 	ctx, cancleServer := context.WithCancel(context.Background())
 
 	for {
-
 		connection, err := listener.AcceptTCP()
 		if err != nil {
 			tmp := "accept error : "
