@@ -28,6 +28,18 @@ func main() {
 	go installSignalHandler()
 	flag.Parse()
 
+	/*
+		fruitarray := [...]string{"apple", "orange", "grape", "mango", "water melon", "pine apple", "chikoo"}
+		fruitslice := fruitarray[1:2]
+
+		for i, v := range fruitarray {
+			log.Println(i, v)
+		}
+		for i, v := range fruitslice {
+			log.Println(i, v)
+		}
+	*/
+
 	log.Println("==== start ", gHostName, " service ====")
 	logfile, err := os.OpenFile("server2.log", os.O_CREATE|os.O_RDWR|os.O_APPEND, os.ModeAppend)
 	if err != nil {
