@@ -5,3 +5,6 @@ src/tcpclient/client.log
 src/tcpclient/tcpclient.exe
 src/tcpserver2/__debug_bin
 src/tcpserver2/server2.log
+pkg/windows_amd64/github.com/julienschmidt/httprouter.a
+pkg/windows_amd64/github.com/sirupsen/logrus.a
+pkg/windows_amd64/github.com/konsorten/go-windows-terminal-sequences.a
