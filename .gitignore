@@ -8,3 +8,5 @@ src/tcpserver2/server2.log
 pkg/windows_amd64/github.com/julienschmidt/httprouter.a
 pkg/windows_amd64/github.com/sirupsen/logrus.a
 pkg/windows_amd64/github.com/konsorten/go-windows-terminal-sequences.a
+pkg/windows_amd64/github.com/jinzhu/gorm.a
+pkg/windows_amd64/github.com/lib/pq.a
