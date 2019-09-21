@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"path"
 	"strconv"
@@ -11,6 +12,13 @@ import (
 
 func init() {
 
+}
+
+type X string
+
+// String : X String
+func (x X) String() string {
+	return fmt.Sprintf("<%s>", string(x))
 }
 
 func main() {
