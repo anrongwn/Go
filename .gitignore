@@ -13,3 +13,6 @@ pkg/windows_amd64/github.com/lib/pq.a
 pkg/windows_amd64/github.com/lib/pq/oid.a
 pkg/windows_amd64/github.com/lib/pq/scram.a
 src/anWebServer1/__debug_bin
+pkg/mod
+pkg/mod/cache/vcs/41b8ed857e0827aa6b1c8c20a7b27865537e7c60a4fd42e9263f533c2aa002cc/FETCH_HEAD
+pkg/mod/cache/vcs/41b8ed857e0827aa6b1c8c20a7b27865537e7c60a4fd42e9263f533c2aa002cc/objects/pack/tmp_pack_hiFItx

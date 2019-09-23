@@ -21,7 +21,50 @@ func (x X) String() string {
 	return fmt.Sprintf("<%s>", string(x))
 }
 
+func change(s ...string) {
+	s[0] = "Golang"
+	s = append(s, "playground")
+	fmt.Println(s)
+}
+
 func main() {
+	welcome := []string{"hello", "wangjr"}
+	change(welcome...)
+	fmt.Println(welcome)
+
+	a := [...]float64{67.7, 89.8, 21, 78}
+	sum := float64(0)
+	for i, v := range a { //range returns both the index and value
+		fmt.Printf("%d the element of a is %.2f\n", i, v)
+		sum += v
+	}
+	fmt.Println("\nsum of all elements of a", sum)
+
+	var b []float64
+	b = a[0:len(a)]
+	for ii, vv := range b {
+		fmt.Printf("%d the element of a is %.2f\n", ii, vv)
+		vv++
+		b[ii]++
+	}
+
+	for i, v := range a { //range returns both the index and value
+		fmt.Printf("%d the element of a is %.2f\n", i, v)
+		sum += v
+	}
+
+	salse := make(map[string]int)
+	salse["wangjr"] = 100
+	salse["wangjia"] = 90
+	salse["wangyuayua"] = 100
+	fmt.Println(salse)
+	delete(salse, "wangjr")
+	for k, v := range salse {
+		fmt.Printf("key=%s, value=%d\n", k, v)
+	}
+
+	return
+
 	server := http.Server{
 		Addr: "127.0.0.1:8080",
 	}
