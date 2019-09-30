@@ -38,6 +38,11 @@ func main() {
 	//test tun
 	ifce, err := water.New(water.Config{
 		DeviceType: water.TUN,
+		PlatformSpecificParams: water.PlatformSpecificParams{
+			ComponentID:   "tap0901",
+			InterfaceName: "tun0",
+			Network:       "192.168.128.100/24",
+		},
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -54,7 +59,8 @@ func main() {
 
 			//listener.Close()
 
-			goto EXIT
+			//goto EXIT
+			return
 		default:
 			frame.Resize(1500)
 			n, err := ifce.Read([]byte(frame))
@@ -115,19 +121,21 @@ func main() {
 		fmt.Println(code64)
 	}
 
-	for {
-		select {
-		case s := <-signChannel:
-			log.Println("Get system signal:", s)
-			//logout.Println("Get system signal:", s)
+	/*
+		for {
+			select {
+			case s := <-signChannel:
+				log.Println("Get system signal:", s)
+				//logout.Println("Get system signal:", s)
 
-			//listener.Close()
+				//listener.Close()
 
-			goto EXIT
+				goto EXIT
+			}
 		}
-	}
+	*/
 
-EXIT:
+	//EXIT:
 	log.Println("Waiting gorouting exit ....")
 	wg.Wait()
 }
