@@ -9,6 +9,9 @@ import (
 	"os"
 	"os/signal"
 	"sync"
+
+	"github.com/songgao/packets/ethernet"
+	"github.com/songgao/water"
 )
 
 var (
@@ -32,13 +35,42 @@ func main() {
 	//安装系统信号handler
 	go installSignalHandler()
 
+	//test tun
+	ifce, err := water.New(water.Config{
+		DeviceType: water.TUN,
+	})
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		log.Println("Interface name : ", ifce.Name())
+	}
+	var frame ethernet.Frame
+
+	for {
+		frame.Resize(1500)
+		n, err := ifce.Read([]byte(frame))
+		if err != nil {
+			log.Fatal(err)
+		}
+		frame = frame[:n]
+
+		log.Println("frame len: ", n)
+		log.Printf("Dst: %s\n", frame.Destination())
+		log.Printf("Src: %s\n", frame.Source())
+		log.Printf("Ethertype: % x\n", frame.Ethertype())
+		log.Printf("Payload: % x\n", frame.Payload())
+	}
+
+	//
+	return
+
 	//1、Int
 	key := make([]byte, 32)
 	for i := 0; i < 32; i++ {
 		n, err := rand.Int(rand.Reader, big.NewInt(128))
 		if err == nil {
 			fmt.Println("rand.Int：", n, n.BitLen())
-			key[i] = n.Bytes()
+			//key[i] = n.Bytes()
 			//fmt.Println("", string(n.Bytes()))
 		}
 	}

@@ -1,13 +1,9 @@
 package main
 
 import (
-	"../general"
-	"../tun"
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"github.com/FlowerWrong/netstack/tcpip/header"
-	"github.com/songgao/water"
 	"go-share/cmdtion"
 	"go-share/jsontion"
 	"go-share/logtion"
@@ -20,6 +16,11 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"../general"
+	"../tun"
+	"github.com/FlowerWrong/netstack/tcpip/header"
+	"github.com/songgao/water"
 )
 
 type VTunServerConfig struct {
@@ -219,7 +220,7 @@ func (tl *TunnelServer) StoreClientSocket(SrcIP net.IP, SrcPort uint16, DstIP ne
 	tl.ClientSocketListPeerMap.Store(tmp, time.Now().Unix())
 }
 
-func (tl *TunnelServer) LoadClientSocket(SrcIP net.IP, SrcPort uint16, DstIP net.IP) (*net.UDPAddr) {
+func (tl *TunnelServer) LoadClientSocket(SrcIP net.IP, SrcPort uint16, DstIP net.IP) *net.UDPAddr {
 	tl.LoadKey.Reset()
 	tl.LoadKey.Write(SrcIP)
 	tl.LoadKey.WriteString(strconv.FormatInt(int64(SrcPort), 10))
