@@ -47,18 +47,28 @@ func main() {
 	var frame ethernet.Frame
 
 	for {
-		frame.Resize(1500)
-		n, err := ifce.Read([]byte(frame))
-		if err != nil {
-			log.Fatal(err)
-		}
-		frame = frame[:n]
+		select {
+		case s := <-signChannel:
+			log.Println("Get system signal:", s)
+			//logout.Println("Get system signal:", s)
 
-		log.Println("frame len: ", n)
-		log.Printf("Dst: %s\n", frame.Destination())
-		log.Printf("Src: %s\n", frame.Source())
-		log.Printf("Ethertype: % x\n", frame.Ethertype())
-		log.Printf("Payload: % x\n", frame.Payload())
+			//listener.Close()
+
+			goto EXIT
+		default:
+			frame.Resize(1500)
+			n, err := ifce.Read([]byte(frame))
+			if err != nil {
+				log.Fatal(err)
+			}
+			frame = frame[:n]
+
+			log.Println("frame len: ", n)
+			log.Printf("Dst: %s\n", frame.Destination())
+			log.Printf("Src: %s\n", frame.Source())
+			log.Printf("Ethertype: % x\n", frame.Ethertype())
+			log.Printf("Payload: % x\n", frame.Payload())
+		}
 	}
 
 	//
