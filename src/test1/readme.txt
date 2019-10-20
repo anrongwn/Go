@@ -23,3 +23,13 @@ cd /d/myProgramming/Go/src/golang.org/x
 git clone https://github.com/golang/sys
 
 gogm 
+
+
+//手动安装go相关插件
+3.安装失败插件处理
+在你的$GOPATH/src/golang.org/x目录下从github上下载插件源码,如果没有该文件夹则自己创建即可.执行命令如下:
+
+git clone https://github.com/golang/tools.git tools
+git clone https://github.com/golang/lint.git lint
+go install golang.org/x/lint/golint
+
