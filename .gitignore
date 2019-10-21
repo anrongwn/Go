@@ -16,3 +16,9 @@ src/anWebServer1/__debug_bin
 pkg/mod
 pkg/mod/cache/vcs/41b8ed857e0827aa6b1c8c20a7b27865537e7c60a4fd42e9263f533c2aa002cc/FETCH_HEAD
 pkg/mod/cache/vcs/41b8ed857e0827aa6b1c8c20a7b27865537e7c60a4fd42e9263f533c2aa002cc/objects/pack/tmp_pack_hiFItx
+src/tavenli-port-forward-v1.2.9_beta
+src/tavenli-port-forward-v1.2.9_beta/
+src/*.zip
+
+src/tcpserver2/server2.exe
+pkg/windows_amd64/github.com/axgle/mahonia.a

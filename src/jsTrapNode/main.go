@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"math/big"
+	"net"
 	"os"
 	"os/signal"
 	"sync"
@@ -28,12 +29,41 @@ func installSignalHandler() {
 	signal.Notify(signChannel, os.Interrupt, os.Kill)
 }
 
+func hosts(cidr string) ([]string, error) {
+	ip, ipnet, err := net.ParseCIDR(cidr)
+	if err != nil {
+		return nil, err
+	}
+
+	var ips []string
+	for ip := ip.Mask(ipnet.Mask); ipnet.Contains(ip); inc(ip) {
+		ips = append(ips, ip.String())
+	}
+	return ips[1 : len(ips)-1], nil
+}
+
+func inc(ip net.IP) {
+	for j := len(ip) - 1; j >= 0; j-- {
+		ip[j]++
+		if ip[j] > 0 {
+			break
+		}
+	}
+}
+
 func main() {
 	//分析输入参数
 	flag.Parse()
 
 	//安装系统信号handler
 	go installSignalHandler()
+
+	/*// print ALL IP
+	host, _ := hosts("192.168.128.100/24")
+	for _, ip := range host {
+		fmt.Println("sent: " + ip)
+	}
+	*/
 
 	//test tun
 	ifce, err := water.New(water.Config{
@@ -63,6 +93,7 @@ func main() {
 			return
 		default:
 			frame.Resize(1500)
+			log.Println("ifce.IsTun : ", ifce.IsTUN())
 			n, err := ifce.Read([]byte(frame))
 			if err != nil {
 				log.Fatal(err)
@@ -74,6 +105,13 @@ func main() {
 			log.Printf("Src: %s\n", frame.Source())
 			log.Printf("Ethertype: % x\n", frame.Ethertype())
 			log.Printf("Payload: % x\n", frame.Payload())
+
+			/* //echo write
+			n, err = ifce.Write(frame)
+			if err != nil {
+				log.Fatal(err)
+			}
+			*/
 		}
 	}
 

@@ -10,6 +10,8 @@ import (
 	"os/signal"
 	"sync"
 	"time"
+
+	"github.com/axgle/mahonia"
 )
 
 var (
@@ -24,9 +26,27 @@ func init() {
 	flag.StringVar(&gHostName, "hostname", "127.0.0.1:9090", "ip:port")
 }
 
+// ConvertToByte
+func ConvertToByte(src string, srcCode string, targetCode string) []byte {
+	srcCoder := mahonia.NewDecoder(srcCode)
+	srcResult := srcCoder.ConvertString(src)
+	tagCoder := mahonia.NewDecoder(targetCode)
+	_, cdata, _ := tagCoder.Translate([]byte(srcResult), true)
+	return cdata
+}
+
 func main() {
 	go installSignalHandler()
 	flag.Parse()
+
+	/* //windows 中powershell 执行时，参数不能有.
+	log.Println("gHostName len=", len(gHostName))
+	if runtime.GOOS == `windows` {
+		log.Println("windows gHostName len=", len(gHostName))
+		gHostName = string(ConvertToByte(gHostName, "GB18030", "UTF-8"))
+		log.Println("windows gHostName=", gHostName)
+	}
+	*/
 
 	/*
 		fruitarray := [...]string{"apple", "orange", "grape", "mango", "water melon", "pine apple", "chikoo"}
@@ -61,8 +81,8 @@ func main() {
 		log.Fatalln(tmp)
 	}
 
-	log.Println("=== Listening ", gHostName, "....")
-	logout.Println("=== Listening ", gHostName, "....")
+	log.Println("==== Listening ", gHostName, "....")
+	logout.Println("==== Listening ", gHostName, "....")
 	listener, err := net.ListenTCP("tcp4", tcpAddr)
 	if err != nil {
 		tmp := "net.listen error,"
