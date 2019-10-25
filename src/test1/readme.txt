@@ -33,3 +33,21 @@ git clone https://github.com/golang/tools.git tools
 git clone https://github.com/golang/lint.git lint
 go install golang.org/x/lint/golint
 
+//更新工具
+go install github.com/ramya-rao-a/go-outline
+go install github.com/acroca/go-symbols
+go install golang.org/x/tools/cmd/guru
+go install golang.org/x/tools/cmd/gorename
+go install github.com/josharian/impl
+go install github.com/rogpeppe/godef
+go install github.com/sqs/goreturns
+go install github.com/golang/lint/golint
+go install github.com/cweill/gotests/gotests
+go install github.com/ramya-rao-a/go-outline
+go install github.com/acroca/go-symbols
+go install golang.org/x/tools/cmd/guru
+go install golang.org/x/tools/cmd/gorename
+go install github.com/josharian/impl
+go install github.com/rogpeppe/godef
+go install github.com/sqs/goreturns
+go install github.com/cweill/gotests/gotests

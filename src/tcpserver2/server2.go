@@ -26,7 +26,10 @@ func init() {
 	flag.StringVar(&gHostName, "hostname", "127.0.0.1:9090", "ip:port")
 }
 
-// ConvertToByte
+// ConvertToByte 字符编码转换
+// @Auth wangjr 2019-10-20
+// @Param src string 待转换字符串，srcCode string 源编码, targetCode string 目标编码
+// @Return []byte
 func ConvertToByte(src string, srcCode string, targetCode string) []byte {
 	srcCoder := mahonia.NewDecoder(srcCode)
 	srcResult := srcCoder.ConvertString(src)
@@ -119,6 +122,7 @@ EXIT:
 
 func installSignalHandler() {
 	signal.Notify(signChannel, os.Interrupt, os.Kill)
+
 }
 
 func accept(listener *net.TCPListener) {
